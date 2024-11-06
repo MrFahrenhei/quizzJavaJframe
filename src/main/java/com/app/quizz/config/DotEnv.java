@@ -8,9 +8,9 @@ import java.util.Map;
 
 public class DotEnv {
     private final Map<String, String> envVars = new HashMap<>();
-    public DotEnv(String filePath){
+    public DotEnv(){
         try{
-            Files.lines(Paths.get(filePath))
+            Files.lines(Paths.get(".env"))
                     .filter(line -> line.contains("=") && !line.startsWith("#"))
                     .forEach(line ->{
                         String[] parts = line.split("=", 2);
