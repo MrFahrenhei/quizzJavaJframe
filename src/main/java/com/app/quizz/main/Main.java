@@ -10,8 +10,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-//                new TitleScreenGui().setVisible(true);
-                new CreateQuestion().setVisible(true);
+                new TitleScreenGui().setVisible(true);
             }
         });
     }
