@@ -20,7 +20,7 @@ public class JDBC {
            );
 
             Category categoryObj = getCategory(category);
-            if(Objects.isNull(categoryObj)){
+            if(categoryObj == null){
                 categoryObj = insertCategory(category);
             }
 
@@ -39,7 +39,7 @@ public class JDBC {
                     DB_HOST, DB_USER, DB_PASSWORD
             );
             PreparedStatement insertQuestionQuery = connection.prepareStatement(
-                    "INSERT INTO question(category_id, question_text) VALUES (?, ?)",
+                    "INSERT INTO question(category_id, question_text, dt_insert) VALUES (?, ?, now())",
                     Statement.RETURN_GENERATED_KEYS
             );
             insertQuestionQuery.setInt(1, category.getCategoryId());
@@ -82,7 +82,7 @@ public class JDBC {
                     DB_HOST, DB_USER, DB_PASSWORD
             );
             PreparedStatement insertCategoryQuery = connection.prepareStatement(
-                    "INSERT INTO category(category_name) VALUES (?)",
+                    "INSERT INTO category(category_name, dt_insert) VALUES (?, now())",
                     Statement.RETURN_GENERATED_KEYS
             );
             insertCategoryQuery.setString(1, category);
@@ -106,19 +106,19 @@ public class JDBC {
                     DB_HOST, DB_USER, DB_PASSWORD
             );
             PreparedStatement insertAnswerQuery = connection.prepareStatement(
-                    "INSERT INTO answer(question_id, answer_text, is_correct) " +
-                            "VALUES (?, ?, ?)",
+                    "INSERT INTO answer(question_id, answer_text, is_correct, dt_insert) " +
+                            "VALUES (?, ?, ?, now())",
                     Statement.RETURN_GENERATED_KEYS
             );
 
-            insertAnswerQuery.setInt(1, correctIndex);
+            insertAnswerQuery.setInt(1, question.getQuestionId());
             for(int i = 0; i < answers.length; i++){
                 insertAnswerQuery.setString(2, answers[i]);
 
                 if(i==correctIndex){
                     insertAnswerQuery.setBoolean(3, true);
                 }else{
-                    insertAnswerQuery.setBoolean(3, true);
+                    insertAnswerQuery.setBoolean(3, false);
                 }
                insertAnswerQuery.executeUpdate();
             }
