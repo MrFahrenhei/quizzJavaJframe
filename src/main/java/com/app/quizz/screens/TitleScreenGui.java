@@ -4,6 +4,8 @@ import com.app.quizz.design.Colors;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class TitleScreenGui extends JFrame {
     private JComboBox categoriesMenu;
@@ -83,6 +85,17 @@ public class TitleScreenGui extends JFrame {
         createAQuestion.setBounds(65, 420, 262, 45);
         createAQuestion.setBackground(Colors.BRIGHT_YELLOW);
         createAQuestion.setForeground(Colors.LIGHT_BLUE);
+        createAQuestion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CreateQuestion createQuestion = new CreateQuestion();
+                createQuestion.setLocationRelativeTo(TitleScreenGui.this);
+
+                TitleScreenGui.this.dispose();
+
+                createQuestion.setVisible(true);
+            }
+        });
         add(createAQuestion);
     }
 }
