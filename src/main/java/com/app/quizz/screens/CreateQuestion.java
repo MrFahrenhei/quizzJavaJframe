@@ -1,16 +1,21 @@
 package com.app.quizz.screens;
 
+import com.app.quizz.connection.JDBC;
 import com.app.quizz.design.Colors;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class CreateQuestion extends JFrame{
     private JTextArea questionTextArea;
     private JTextField categoryTextField;
-    private JTextField[] answerTextFields;
-    private ButtonGroup buttonGroup;
-    private JRadioButton[] answerRadioButtons;
+    private final JTextField[] answerTextFields;
+    private final ButtonGroup buttonGroup;
+    private final JRadioButton[] answerRadioButtons;
 
     public  CreateQuestion(){
         super("Create a Question");
@@ -68,6 +73,31 @@ public class CreateQuestion extends JFrame{
         submitButton.setBounds(300, 450, 262, 45);
         submitButton.setForeground(Colors.DARK_BLUE);
         submitButton.setBackground(Colors.BRIGHT_YELLOW);
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(validateInput()) {
+                    String question = questionTextArea.getText();
+                    String category = categoryTextField.getText();
+                    String[] answers = new String[answerTextFields.length];
+                    int correctIndex = 0;
+                    for (int i = 0; i < answers.length; i++) {
+                        answers[i] = answerTextFields[i].getText();
+                        if (answerRadioButtons[i].isSelected()) {
+                            correctIndex = i;
+                        }
+                    }
+                    if (JDBC.saveQuestionCategoryAndAnswers(question, category, answers, correctIndex)) {
+                        JOptionPane.showMessageDialog(CreateQuestion.this, "Successfuly added Question");
+                        resetFields();
+                    } else {
+                        JOptionPane.showMessageDialog(CreateQuestion.this, "Something went wrong");
+                    }
+                }else{
+                    JOptionPane.showMessageDialog(CreateQuestion.this, "Invalid Input");
+                }
+            }
+        });
         add(submitButton);
 
         JLabel returnLabel = new JLabel("Return");
@@ -75,6 +105,19 @@ public class CreateQuestion extends JFrame{
         returnLabel.setBounds(300, 500, 262, 20);
         returnLabel.setForeground(Colors.BRIGHT_YELLOW);
         returnLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        returnLabel.addMouseListener(
+                new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        TitleScreenGui titleScreenGui = new TitleScreenGui();
+                        titleScreenGui.setLocationRelativeTo(CreateQuestion.this);
+
+                        CreateQuestion.this.dispose();
+
+                        titleScreenGui.setVisible(true);dispose();
+                    }
+                }
+        );
         add(returnLabel);
     }
 
@@ -100,6 +143,26 @@ public class CreateQuestion extends JFrame{
             answerTextFields[i].setFont(new Font("Arial", Font.PLAIN, 16));
             answerTextFields[i].setForeground(Colors.DARK_BLUE);
             add(answerTextFields[i]);
+        }
+        answerRadioButtons[0].setSelected(true);
+    }
+
+    private boolean validateInput(){
+        if(questionTextArea.getText().replaceAll("", "").length() <= 0)return false;
+        if(categoryTextField.getText().replaceAll("", "").length() <= 0)return false;
+        for(int i = 0; i < answerTextFields.length; i++){
+            if(answerTextFields[i].getText().replaceAll("", "").length() <= 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void resetFields(){
+        questionTextArea.setText("");
+        categoryTextField.setText("");
+        for(int i = 0; i < answerRadioButtons.length; i++){
+            answerTextFields[i].setText("");
         }
     }
 }
