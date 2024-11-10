@@ -12,8 +12,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-//                new TitleScreenGui().setVisible(true);
-                new QuizScreen(new Category(1, "Javascript"), 10).setVisible(true);
+                new TitleScreenGui().setVisible(true);
             }
         });
     }

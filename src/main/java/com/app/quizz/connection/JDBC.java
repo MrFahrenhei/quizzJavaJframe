@@ -57,7 +57,7 @@ public class JDBC {
 
         return null;
     }
-    private static Category getCategory(String category){
+    public static Category getCategory(String category){
         try{
             PreparedStatement getCategoryQuery = connection.prepareStatement("SELECT * FROM category WHERE category_name = ?");
             getCategoryQuery.setString(1, category);

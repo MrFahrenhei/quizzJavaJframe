@@ -8,13 +8,16 @@ import com.app.quizz.models.Question;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class QuizScreen extends JFrame {
+public class QuizScreen extends JFrame implements ActionListener {
     private JLabel scoreLabel;
     private JTextArea questionTextArea;
     private Category category;
     private JButton[] answerButtons;
+    private JButton nextButton;
 
     private ArrayList<Question> questions;
     private Question currentQuestion;
@@ -77,13 +80,40 @@ public class QuizScreen extends JFrame {
         returnToTitleButton.setBounds(60, 420, 262, 35);
         returnToTitleButton.setBackground(Colors.BRIGHT_YELLOW);
         returnToTitleButton.setForeground(Colors.LIGHT_BLUE);
+        returnToTitleButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               TitleScreenGui titleScreenGui = new TitleScreenGui();
+               titleScreenGui.setLocationRelativeTo(QuizScreen.this);
+
+               QuizScreen.this.dispose();
+               titleScreenGui.setVisible(true);
+            }
+        });
         add(returnToTitleButton);
 
-        JButton nextButton = new JButton("Next");
+        nextButton = new JButton("Next");
         nextButton.setFont(new Font("Arial", Font.BOLD, 16));
         nextButton.setBounds(240,470,80,35);
         nextButton.setBackground(Colors.BRIGHT_YELLOW);
         nextButton.setForeground(Colors.LIGHT_BLUE);
+        nextButton.setVisible(false);
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               nextButton.setVisible(false);
+               firstChoiseMade = false;
+               currentQuestion = questions.get(++currentQuestionIndex);
+               questionTextArea.setText(currentQuestion.getQuestionText());
+               for(int i = 0; i < currentQuestion.getAnswers().size(); i++){
+                   Answer answer = currentQuestion.getAnswers().get(i);
+
+                   answerButtons[i].setBackground(Color.WHITE);
+
+                   answerButtons[i].setText(answer.getAnswerText());
+               }
+            }
+        });
         add(nextButton);
     }
 
@@ -97,8 +127,36 @@ public class QuizScreen extends JFrame {
             answerButton.setHorizontalAlignment(SwingConstants.LEFT);
             answerButton.setBackground(Color.WHITE);
             answerButton.setForeground(Colors.DARK_BLUE);
+            answerButton.addActionListener(this);
             answerButtons[i] = answerButton;
             add(answerButtons[i]);
         }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JButton answerButton = (JButton) e.getSource();
+
+        Answer correctAnswer = null;
+        for(Answer answer : currentQuestion.getAnswers()){
+           if(answer.isCorrect()){
+               correctAnswer = answer;
+               break;
+           }
+        }
+        if(answerButton.getText().equals(correctAnswer.getAnswerText())){
+           answerButton.setBackground(Colors.LIGHT_GREEN);
+           if(!firstChoiseMade){
+               scoreLabel.setText("Score: " + (++score) + "/" + numberOfQuestions);
+           }
+           if(currentQuestionIndex == numberOfQuestions -1){
+              JOptionPane.showMessageDialog(QuizScreen.this, "You're final score is " + score + "/" + numberOfQuestions);
+           }else{
+               nextButton.setVisible(true);
+           }
+        }else{
+            answerButton.setBackground(Colors.LIGHT_RED);
+        }
+        firstChoiseMade = true;
     }
 }

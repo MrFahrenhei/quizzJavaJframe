@@ -2,6 +2,7 @@ package com.app.quizz.screens;
 
 import com.app.quizz.connection.JDBC;
 import com.app.quizz.design.Colors;
+import com.app.quizz.models.Category;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,6 +77,22 @@ public class TitleScreenGui extends JFrame {
         startButton.setBounds(65, 290, 262, 45);
         startButton.setBackground(Colors.BRIGHT_YELLOW);
         startButton.setForeground(Colors.LIGHT_BLUE);
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(validInput()){
+                    Category category = JDBC.getCategory(categoriesMenu.getSelectedItem().toString());
+                    if(category == null) return;
+                    int numOfQuestions = Integer.parseInt(numOfQuestionsField.getText());
+                    QuizScreen quizScreen = new QuizScreen(category, numOfQuestions);
+                    quizScreen.setLocationRelativeTo(TitleScreenGui.this);
+
+                    TitleScreenGui.this.dispose();
+
+                    quizScreen.setVisible(true);
+                }
+            }
+        });
         add(startButton);
 
         JButton quitButton = new JButton("Quit");
@@ -83,6 +100,12 @@ public class TitleScreenGui extends JFrame {
         quitButton.setBounds(65, 350, 262, 45);
         quitButton.setBackground(Colors.BRIGHT_YELLOW);
         quitButton.setForeground(Colors.LIGHT_BLUE);
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               TitleScreenGui.this.dispose();
+            }
+        });
         add(quitButton);
 
         JButton createAQuestion = new JButton("Create a Question");
@@ -102,5 +125,11 @@ public class TitleScreenGui extends JFrame {
             }
         });
         add(createAQuestion);
+    }
+
+    private boolean validInput() {
+        if(numOfQuestionsField.getText().replaceAll(" ", "").length() <= 0) return false;
+        if(categoriesMenu.getSelectedItem() == null) return false;
+        return true;
     }
 }
