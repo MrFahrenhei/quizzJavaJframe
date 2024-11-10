@@ -1,15 +1,19 @@
 package com.app.quizz.screens;
 
+import com.app.quizz.connection.JDBC;
 import com.app.quizz.design.Colors;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class TitleScreenGui extends JFrame {
     private JComboBox categoriesMenu;
     private JTextField numOfQuestionsField;
+
+
     public TitleScreenGui() {
         super("Aplicativo Quizz");
 
@@ -46,9 +50,10 @@ public class TitleScreenGui extends JFrame {
 
         // drop down menu for categories
         // temporary categories
-        String[] categories = new String[]{"Math", "Programing", "History"};
+        //String[] categories = new String[]{"Math", "Programing", "History"};
 
-        categoriesMenu = new JComboBox(categories);
+        ArrayList<String> categoriesList = JDBC.getCategories();
+        categoriesMenu = new JComboBox(categoriesList.toArray());
         categoriesMenu.setBounds(20, 120, 337, 45);
         categoriesMenu.setForeground(Colors.DARK_BLUE);
         add(categoriesMenu);
